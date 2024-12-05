@@ -10,10 +10,10 @@ app.use(express.json());
 
 // mongodb
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.upkox.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -35,17 +35,42 @@ async function run() {
         res.send(result);
     })
 
+    app.get('/reviews/:id', async(req,res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const cursor = await reviewCollection.findOne(query)
+      res.send(cursor)
+    })
+
+    app.get('/my-reviews/:email', async(req,res) => {
+      const email = req.params.email
+      const query = { email: email }
+      const result = await reviewCollection.find(query).toArray()
+      res.send(result)
+    })
+
     app.post('/reviews', async(req,res) => {
         const review = req.body;
         const result = await reviewCollection.insertOne(review)
         res.send(result)
     })
 
-    // Send a ping to confirm a successful connection
-    // await client.db("admin").command({ ping: 1 });
+    app.patch('/reviews', async(req,res) => {
+      const id = req.params.updateId;
+      const boolean = req.body;
+      const update = {
+        $set: {
+          isWatchLater: boolean
+        }
+      }
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const result = await reviewCollection.updateOne(query,update,options)
+      res.send(result)
+    })
+
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
     // await client.close();
   }
 }
