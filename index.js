@@ -28,7 +28,7 @@ async function run() {
     const reviewCollection = client.db('reviewsDB').collection('reviews');
 
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     app.get('/reviews', async(req,res) => {
         const result = await reviewCollection.find().toArray();
@@ -66,6 +66,13 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const result = await reviewCollection.updateOne(query,update,options)
+      res.send(result)
+    })
+
+    app.delete('/delete-reviews/:id', async(req,res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = reviewCollection.deleteOne(query)
       res.send(result)
     })
 
