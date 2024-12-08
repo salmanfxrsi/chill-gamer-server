@@ -2,6 +2,9 @@
 
 This repository contains the server-side code for the **Chill Gamer** application. It handles database operations, authentication, and other backend logic.
 
+### Live Site
+[Live Site](https://chill-gamer-server-one.vercel.app/)
+
 ### Features:
 - **Database Management**: MongoDB is used to store game reviews, user data, and watch list information.
 - **User Authentication**: Handles login and registration, ensuring that only logged-in users can access protected routes such as adding reviews and viewing the watch list.
