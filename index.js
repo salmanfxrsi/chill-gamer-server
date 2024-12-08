@@ -24,6 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const reviewCollection = client.db("reviewsDB").collection("reviews");
+    const wishlistCollection = client.db("reviewsDB").collection("wishlist");
 
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -47,11 +48,24 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/wishlist/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { wisherEmail: email };
+      const result = await wishlistCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.post("/reviews", async (req, res) => {
       const review = req.body;
       const result = await reviewCollection.insertOne(review);
       res.send(result);
     });
+
+    app.post('/wishlist', async(req,res)=>{
+      const gameData = req.body;
+      const result = await wishlistCollection.insertOne(gameData);
+      res.send(result);
+    })
 
     app.patch("/reviews", async (req, res) => {
       const id = req.params.updateId;
@@ -94,6 +108,7 @@ async function run() {
       const result = reviewCollection.deleteOne(query);
       res.send(result);
     });
+    
 
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
